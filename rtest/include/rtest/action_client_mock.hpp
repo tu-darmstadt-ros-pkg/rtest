@@ -100,13 +100,8 @@ public:
   bool is_invalidated() const { return false; }
   std::shared_future<WrappedResult> async_get_result()
   {
-    std::promise<WrappedResult> p;
-    WrappedResult result;
-    result.code = ResultCode::SUCCEEDED;
-    result.result = std::make_shared<Result>();
-    result.goal_id = goal_id_;
-    p.set_value(result);
-    return p.get_future().share();
+    is_result_aware_ = true;
+    return result_future_;
   }
   bool set_result_awareness(bool aware)
   {
@@ -115,16 +110,29 @@ public:
     return previous;
   }
   void set_result(const WrappedResult & result) { (void)result; }
+  void set_result_callback(ResultCallback cb) { result_callback = std::move(cb); }
+  void set_feedback_callback(FeedbackCallback cb) { feedback_callback = std::move(cb); }
   void invalidate(const exceptions::UnawareGoalHandleError & ex) { (void)ex; }
   void set_status(int8_t status) { status_ = status; }
   void set_goal_id(const GoalUUID & goal_id) { goal_id_ = goal_id; }
   void set_goal_stamp(const rclcpp::Time & stamp) { time_stamp_ = stamp; }
+
+  /// Resolve the result future (and call result_callback if set).
+  void resolve_result(const WrappedResult & wr)
+  {
+    if (result_callback) {
+      result_callback(wr);
+    }
+    result_promise_.set_value(wr);
+  }
 
 private:
   GoalUUID goal_id_;
   rclcpp::Time time_stamp_;
   int8_t status_{0};
   bool is_result_aware_{false};
+  std::promise<WrappedResult> result_promise_;
+  std::shared_future<WrappedResult> result_future_{result_promise_.get_future().share()};
 };
 
 template <typename ActionT>
@@ -482,8 +490,8 @@ public:
 
   void simulate_result(const GoalHandleSharedPtr & goal_handle, const WrappedResult & result)
   {
-    if (goal_handle && goal_handle->result_callback) {
-      goal_handle->result_callback(result);
+    if (goal_handle) {
+      goal_handle->resolve_result(result);
     }
   }
 
