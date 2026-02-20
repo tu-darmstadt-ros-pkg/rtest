@@ -277,10 +277,8 @@ public:
         ->async_cancel_all_goals(cancel_callback);
     }
     std::promise<typename CancelResponse::SharedPtr> promise;
-    CancelResponse result;
-    result.code = ResultCode::SUCCEEDED;
-    result.result = std::make_shared<Result>();
-    promise.set_value(result);
+    auto response = std::make_shared<CancelResponse>();
+    promise.set_value(response);
     return promise.get_future().share();
   }
 
