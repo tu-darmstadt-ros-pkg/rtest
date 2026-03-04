@@ -104,6 +104,10 @@ public:
   using SharedRequest = typename Types::SharedRequest;
   using SharedResponse = typename Types::SharedResponse;
 
+  using Future = std::future<SharedResponse>;
+  using SharedFuture = std::shared_future<SharedResponse>;
+  using SharedFutureWithRequest = std::shared_future<std::pair<SharedRequest, SharedResponse>>;
+
   using Promise = std::promise<SharedResponse>;
   using PromiseWithRequest = std::promise<std::pair<SharedRequest, SharedResponse>>;
   using SharedPromise = std::shared_ptr<Promise>;
