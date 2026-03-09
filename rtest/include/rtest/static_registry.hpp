@@ -468,6 +468,44 @@ public:
     lazy_init_action_servers_.clear();
   }
 
+  /**
+   * @brief Dump all registered entities to stderr for debugging.
+   *
+   * @param node rcl handle of the Node to dump (nullptr = dump all nodes)
+   */
+  void dumpRegistry(const std::shared_ptr<const rcl_node_t> & node = nullptr) const
+  {
+    auto nodeName = [](const NodeId & id) -> std::string {
+      auto handle = id.lock();
+      const char * name = handle ? rcl_node_get_fully_qualified_name(handle.get()) : nullptr;
+      return name ? name : "<expired node>";
+    };
+    auto dumpMap = [&](const auto & registry, const std::string & entityType) {
+      for (const auto & [id, entityMap] : registry) {
+        if (node && (id.owner_before(NodeId{node}) || NodeId{node}.owner_before(id))) {
+          continue;
+        }
+        for (const auto & [name, weakPtr] : entityMap) {
+          std::cerr << "  [" << entityType << "] node=\"" << nodeName(id) << "\" name=\"" << name
+                    << "\"" << (weakPtr.lock() ? " (alive)" : " (expired)") << "\n";
+        }
+      }
+    };
+
+    std::cerr << "=== rtest::StaticMocksRegistry dump";
+    if (node) {
+      std::cerr << " (filter: \"" << nodeName(node) << "\")";
+    }
+    std::cerr << " ===\n";
+    dumpMap(publishersRegistry_, "Publisher");
+    dumpMap(subscriptionsRegistry_, "Subscription");
+    dumpMap(servicesRegistry_, "Service");
+    dumpMap(serviceClientsRegistry_, "ServiceClient");
+    dumpMap(actionServersRegistry_, "ActionServer");
+    dumpMap(actionClientsRegistry_, "ActionClient");
+    std::cerr << "=== end dump ===\n";
+  }
+
 private:
   StaticMocksRegistry()
   {
