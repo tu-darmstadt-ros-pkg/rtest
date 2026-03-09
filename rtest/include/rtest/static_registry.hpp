@@ -444,6 +444,55 @@ public:
     lazy_init_action_servers_.clear();
   }
 
+  /**
+   * @brief Dump all registered entities for a given node to stderr for debugging.
+   *
+   * @param nodeName Fully-qualified Node name to dump (empty = dump all nodes)
+   */
+  void dumpRegistry(const FullyQualifiedNodeNameT & nodeName = "") const
+  {
+    auto dumpMap = [](const auto & registry, const std::string & entityType) {
+      for (const auto & [node, entityMap] : registry) {
+        for (const auto & [name, weakPtr] : entityMap) {
+          std::cerr << "  [" << entityType << "] node=\"" << node << "\" name=\"" << name << "\""
+                    << (weakPtr.lock() ? " (alive)" : " (expired)") << "\n";
+        }
+      }
+    };
+
+    std::cerr << "=== rtest::StaticMocksRegistry dump";
+    if (!nodeName.empty()) {
+      std::cerr << " (filter: \"" << nodeName << "\")";
+    }
+    std::cerr << " ===\n";
+
+    if (nodeName.empty()) {
+      dumpMap(publishersRegistry_, "Publisher");
+      dumpMap(subscriptionsRegistry_, "Subscription");
+      dumpMap(servicesRegistry_, "Service");
+      dumpMap(serviceClientsRegistry_, "ServiceClient");
+      dumpMap(actionServersRegistry_, "ActionServer");
+      dumpMap(actionClientsRegistry_, "ActionClient");
+    } else {
+      auto dumpNodeMap = [&nodeName](const auto & registry, const std::string & entityType) {
+        auto it = registry.find(nodeName);
+        if (it != registry.end()) {
+          for (const auto & [name, weakPtr] : it->second) {
+            std::cerr << "  [" << entityType << "] name=\"" << name << "\""
+                      << (weakPtr.lock() ? " (alive)" : " (expired)") << "\n";
+          }
+        }
+      };
+      dumpNodeMap(publishersRegistry_, "Publisher");
+      dumpNodeMap(subscriptionsRegistry_, "Subscription");
+      dumpNodeMap(servicesRegistry_, "Service");
+      dumpNodeMap(serviceClientsRegistry_, "ServiceClient");
+      dumpNodeMap(actionServersRegistry_, "ActionServer");
+      dumpNodeMap(actionClientsRegistry_, "ActionClient");
+    }
+    std::cerr << "=== end dump ===\n";
+  }
+
 private:
   StaticMocksRegistry()
   {

@@ -412,7 +412,13 @@ std::shared_ptr<rclcpp::Subscription<MessageT>> findSubscription(
   }
   auto sub =
     StaticMocksRegistry::instance().getSubscription(fullyQualifiedNodeName, topicName).lock();
-  return std::dynamic_pointer_cast<rclcpp::Subscription<MessageT>>(sub);
+  auto result = std::dynamic_pointer_cast<rclcpp::Subscription<MessageT>>(sub);
+  if (!result) {
+    std::cerr << "rtest::findSubscription() FAILED: no Subscription found for node=\""
+              << fullyQualifiedNodeName << "\" topic=\"" << topicName << "\"\n";
+    StaticMocksRegistry::instance().dumpRegistry(fullyQualifiedNodeName);
+  }
+  return result;
 }
 
 /**

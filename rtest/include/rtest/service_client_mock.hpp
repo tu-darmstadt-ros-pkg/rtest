@@ -230,6 +230,10 @@ std::shared_ptr<ServiceClientMock<ServiceT>> findServiceClient(
       client_mock = std::make_shared<ServiceClientMock<ServiceT>>(client_base.get());
       StaticMocksRegistry::instance().attachMock(client_base.get(), client_mock);
     }
+  } else {
+    std::cerr << "rtest::findServiceClient() FAILED: no ServiceClient found for node=\""
+              << fullyQualifiedNodeName << "\" service=\"" << serviceName << "\"\n";
+    StaticMocksRegistry::instance().dumpRegistry(fullyQualifiedNodeName);
   }
   return client_mock;
 }
