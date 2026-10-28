@@ -134,7 +134,7 @@ Rtest provides comprehensive control over the time delivery mechanism and timer 
 
 - Advance simulated time with microsecond precision
 - Trigger specific timer callbacks in a controlled sequence
-- Test edge cases involving precise timing scenarios 
+- Test edge cases involving precise timing scenarios
 - Verify behavior across simulated temporal patterns
 
 ### Development Tools

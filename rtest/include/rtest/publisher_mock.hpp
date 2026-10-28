@@ -333,7 +333,8 @@ std::shared_ptr<PublisherMock<MessageT>> findPublisher(
   } else {
     std::cerr << "rtest::findPublisher() FAILED: no Publisher found for node=\""
               << node->get_fully_qualified_name() << "\" topic=\"" << topicName << "\"\n";
-    StaticMocksRegistry::instance().dumpRegistry(node->get_node_base_interface()->get_shared_rcl_node_handle());
+    StaticMocksRegistry::instance().dumpRegistry(
+      node->get_node_base_interface()->get_shared_rcl_node_handle());
   }
   return pub_mock;
 }

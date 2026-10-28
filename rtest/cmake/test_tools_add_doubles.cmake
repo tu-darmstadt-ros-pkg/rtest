@@ -53,7 +53,7 @@
 #   ---
 #
 #   # In another package that uses the test doubles
-#   
+#
 #   add_executable(integration_test test/main.cpp)
 #   target_link_libraries(integration_test
 #     robot::my_robot_test_doubles
@@ -116,8 +116,8 @@ function(test_tools_add_doubles target)
       ${arg_AMENT_DEPENDENCIES}
     )
   endif()
-  
-  
+
+
   set(RTEST_CMAKE_DIR "${CMAKE_CURRENT_FUNCTION_LIST_DIR}")
 
 

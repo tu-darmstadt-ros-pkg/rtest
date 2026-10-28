@@ -309,7 +309,8 @@ std::shared_ptr<ServiceClientMock<ServiceT>> findServiceClient(
   } else {
     std::cerr << "rtest::findServiceClient() FAILED: no ServiceClient found for node=\""
               << node->get_fully_qualified_name() << "\" service=\"" << serviceName << "\"\n";
-    StaticMocksRegistry::instance().dumpRegistry(node->get_node_base_interface()->get_shared_rcl_node_handle());
+    StaticMocksRegistry::instance().dumpRegistry(
+      node->get_node_base_interface()->get_shared_rcl_node_handle());
   }
   return client_mock;
 }

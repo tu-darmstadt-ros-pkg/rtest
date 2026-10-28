@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2)
-project(rtest_examples 
+project(rtest_examples
   LANGUAGES CXX
   VERSION 0.2.0
 )

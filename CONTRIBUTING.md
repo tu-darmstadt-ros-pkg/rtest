@@ -47,7 +47,7 @@ GitHub provides additional documentation on [forking a repository](https://help.
 ## Signed-off commits
 
 Contributors must sign-off each commit using GPG, SSH, or S/MIME to certify that they have the right to submit
-the code they are contributing to the project according to the [Developer Certificate of Origin (DCO)](https://developercertificate.org/).  
+the code they are contributing to the project according to the [Developer Certificate of Origin (DCO)](https://developercertificate.org/).
 Please follow the instructions on how to sign the commits here: [Signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
 
 ## Releasing
