@@ -92,8 +92,9 @@ target_link_libraries(rtest_common PUBLIC
   rcl_action::rcl_action
   rclcpp::rclcpp
   rclcpp_action::rclcpp_action
-  GTest::gmock
 )
+# INTERFACE only: embedding the static gmock here duplicates it in the test executable (abort at exit)
+target_link_libraries(rtest_common INTERFACE GTest::gmock)
 
 ament_export_dependencies(
   rclcpp rclcpp_action rcl_action GTest
