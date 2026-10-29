@@ -263,7 +263,7 @@ public:
                 << boost::typeindex::type_id<ServiceT>().pretty_name() << ">(\"" << nodeName
                 << "\", \"" << serviceName << "\")\n";
     }
-    registerEntity(servicesRegistry_[nodeName], serviceName, service);
+    registerEntity(servicesRegistry_[nodeName], stripLeadingSlash(serviceName), service);
   }
 
   /**
@@ -286,7 +286,7 @@ public:
     const FullyQualifiedNodeNameT & nodeName,
     const ServiceNameT & serviceName)
   {
-    return findEntity(servicesRegistry_[nodeName], serviceName);
+    return findEntity(servicesRegistry_[nodeName], stripLeadingSlash(serviceName));
   }
 
   template <typename ServiceT>
@@ -300,7 +300,7 @@ public:
                 << boost::typeindex::type_id<ServiceT>().pretty_name() << ">(\"" << nodeName
                 << "\", \"" << serviceName << "\")\n";
     }
-    registerEntity(serviceClientsRegistry_[nodeName], serviceName, client);
+    registerEntity(serviceClientsRegistry_[nodeName], stripLeadingSlash(serviceName), client);
   }
 
   std::vector<std::weak_ptr<rclcpp::ClientBase>> getNodeServiceClients(
@@ -317,7 +317,7 @@ public:
     const FullyQualifiedNodeNameT & nodeName,
     const ServiceNameT & serviceName)
   {
-    return findEntity(serviceClientsRegistry_[nodeName], serviceName);
+    return findEntity(serviceClientsRegistry_[nodeName], stripLeadingSlash(serviceName));
   }
 
   template <typename ActionT>
@@ -500,6 +500,12 @@ private:
   }
 
   static StaticMocksRegistry theRegistry_;
+
+  // Service names are stored without a leading slash, so absolute and relative names match
+  static ServiceNameT stripLeadingSlash(const ServiceNameT & name)
+  {
+    return (!name.empty() && name.front() == '/') ? name.substr(1) : name;
+  }
 
   template <typename RegistryT, typename EntityT>
   void registerEntity(RegistryT & reg, const TopicNameT & topicName, EntityT e)

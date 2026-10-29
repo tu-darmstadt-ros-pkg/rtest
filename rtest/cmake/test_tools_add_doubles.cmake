@@ -93,7 +93,9 @@ function(test_tools_add_doubles target)
   else()
     get_target_property(TARGET_SOURCES ${target} SOURCES)
 
-    add_library(${LIB_DOUBLES_NAME} ${TARGET_SOURCES} ${arg_SOURCES})
+    # STATIC: a shared library would embed the static gmock a second time next to the test
+    # executable, causing duplicate gmock globals (abort at exit)
+    add_library(${LIB_DOUBLES_NAME} STATIC ${TARGET_SOURCES} ${arg_SOURCES})
     add_library(${PROJECT_NAME}::${LIB_DOUBLES_NAME} ALIAS ${LIB_DOUBLES_NAME})
     set_property(TARGET ${LIB_DOUBLES_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
